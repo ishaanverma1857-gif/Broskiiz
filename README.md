@@ -1,0 +1,2 @@
+# Broskiiz
+Entrpreneur-Investor platform
