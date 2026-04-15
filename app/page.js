@@ -335,7 +335,9 @@ export default function App() {
     setChatAnswers(a => ({ ...a, [`q${chatStep}`]: answer }));
     setAiTyping(true);
 
-    const step = chatStep;
+    const step = chatStep; try { const apiM = []; let ff = false; for (const m of newHistory) { if (m.role === "user") ff = true; if (!ff) continue; const r = m.role === "ai" ? "assistant" : "user"; if (apiM.length > 0 && apiM[apiM.length-1].role === r) apiM[apiM.length-1].content += "\n" + m.text; else apiM.push({role: r, content: m.text}); } const res = await fetch("/api/chat", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({system: AI_SYSTEM_PROMPT + '\nYou already asked: "' + AI_QUESTIONS[0].q + '". Continue.', messages: apiM})}); const d = await res.json(); if (d.content?.length) { const t = d.content.map(b=>b.text||"").join(""); if (t.includes("[ANALYSIS_READY]")) { setChatHistory(h=>[...h,{role:"ai",text:t.replace("[ANALYSIS_READY]","").trim()+"\n\n🔥 Generating analysis..."}]); setChatStep(s=>s+1); setAiTyping(false); return; } setChatHistory(h=>[...h,{role:"ai",text:t}]); setChatStep(s=>s+1); setAiTyping(false); return; } } catch(e) {}
+
+
 
     // Try live Claude API first (works when deployed on Vercel)
     try {
